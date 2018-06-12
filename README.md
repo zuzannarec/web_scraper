@@ -4,7 +4,9 @@
 
 # Create cabal sandbox:
 cabal sandbox init
+
 cabal install --only-dependencies
+
 # Build project using 4 jobs (using multiple jobs is optional)
 cabal install -j4
 
