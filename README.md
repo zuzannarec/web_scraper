@@ -11,7 +11,7 @@ cabal install --only-dependencies
 cabal install -j4
 
 # Run on one thread in cabal sandbox (unrecommnded when program is compiled for multi-threads):
-time .cabal-sandbox/bin/web-scraper "<website_address"
+time .cabal-sandbox/bin/web-scraper "<website_address>" "<path_to_folder_for_downloaded_images>"
 
 # Run in parallel on 7 threads in cabal sandbox:
-time .cabal-sandbox/bin/web-scraper "website_address" +RTS -N7
+time .cabal-sandbox/bin/web-scraper "<website_address>" "<path_to_folder_for_downloaded_images>" +RTS -N7
