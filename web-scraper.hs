@@ -9,6 +9,7 @@ import Network.HTTP
 import Network.URI
 import System.Environment
 import Control.Concurrent.ParallelIO
+import System.IO as IO
 
 -- helper function for getting page content
 openUrl :: String -> MaybeT IO String
@@ -28,22 +29,28 @@ images tree = tree >>> css "img" >>> getAttrValue "src"
 
 parseArgs = do
   args <- getArgs
+  mapM_ putStrLn args
   case args of
-       (url:[]) -> return url
-       otherwise -> error "usage: grabber [url]"
+       (url:path:[]) -> return [url, path]
+       otherwise -> error "incorrect command line arguments"
 
-download url = do
+download storage_path url = do
+  putStrLn storage_path
+  putStrLn url
   content <- runMaybeT $ openUrl url
   case content of
        Nothing -> putStrLn $ "bad url: " ++ url
        Just _content -> do
-          let name = tail . uriPath . fromJust . parseURI $ url
-          B.writeFile name (B.pack _content)
+           let name = uriPath . fromJust . parseURI $ url
+           let basename = reverse . takeWhile (/='/') . reverse $ name
+           let path = storage_path ++ basename
+           B.writeFile path (B.pack _content)
 
 main = do
-  url <- parseArgs
+  [url, storage_path] <- parseArgs
   doc <- get url
   imgs <- runX . images $ doc
-  parallel_ $ map download imgs
+  --mapM_ putStrLn imgs
+  parallel_ $ map (download storage_path) imgs
   stopGlobalPool
 
