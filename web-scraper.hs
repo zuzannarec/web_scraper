@@ -9,14 +9,12 @@ import Network.HTTP
 import Network.URI
 import System.Environment
 import Control.Concurrent.ParallelIO
-import System.IO as IO
 
--- helper function for getting page content
 openUrl :: String -> MaybeT IO String
 openUrl url = case parseURI url of
     Nothing -> fail ""
     Just u  -> liftIO (getResponseBody =<< simpleHTTP (mkRequest GET u))
-
+        
 css :: ArrowXml a => String -> a XmlTree XmlTree
 css tag = multi (hasName tag)
 
@@ -35,11 +33,9 @@ parseArgs = do
        otherwise -> error "incorrect command line arguments"
 
 download storage_path url = do
-  putStrLn storage_path
-  putStrLn url
   content <- runMaybeT $ openUrl url
   case content of
-       Nothing -> putStrLn $ "bad url: " ++ url
+       Nothing -> putStrLn $ "bad url: " ++ url ++ "cannot download an image"
        Just _content -> do
            let name = uriPath . fromJust . parseURI $ url
            let basename = reverse . takeWhile (/='/') . reverse $ name
@@ -50,7 +46,6 @@ main = do
   [url, storage_path] <- parseArgs
   doc <- get url
   imgs <- runX . images $ doc
-  --mapM_ putStrLn imgs
   parallel_ $ map (download storage_path) imgs
   stopGlobalPool
 
