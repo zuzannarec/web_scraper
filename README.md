@@ -1,4 +1,5 @@
-# Web scraper written in Haskell. Can be run concurrently. Works only with http protocol as HTTP library does not support https protocol.
+# Web scraper written in Haskell. Allows to download images from given website.
+# Can be run concurrently. Works only with http protocol as HTTP library does not support https protocol.
 
 # Create cabal sandbox:
 cabal sandbox init
