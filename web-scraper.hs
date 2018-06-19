@@ -12,14 +12,14 @@ import Control.Concurrent.ParallelIO
 
 openUrl :: String -> MaybeT IO String
 openUrl url = case parseURI url of
-    Nothing -> fail ""
+    Nothing -> fail "invalid URI"
     Just u  -> liftIO (getResponseBody =<< simpleHTTP (mkRequest GET u))
         
 css :: ArrowXml a => String -> a XmlTree XmlTree
 css tag = multi (hasName tag)
 
-get :: String -> IO (IOSArrow XmlTree (NTree XNode))
-get url = do
+get_content :: String -> IO (IOSArrow XmlTree (NTree XNode))
+get_content url = do
   contents <- runMaybeT $ openUrl url
   return $ readString [withParseHTML yes, withWarnings no] (fromMaybe "" contents)
 
@@ -35,7 +35,7 @@ parseArgs = do
 download storage_path url = do
   content <- runMaybeT $ openUrl url
   case content of
-       Nothing -> putStrLn $ "bad url: " ++ url ++ "cannot download an image"
+       Nothing -> return ()
        Just _content -> do
            let name = uriPath . fromJust . parseURI $ url
            let basename = reverse . takeWhile (/='/') . reverse $ name
@@ -44,7 +44,7 @@ download storage_path url = do
 
 main = do
   [url, storage_path] <- parseArgs
-  doc <- get url
+  doc <- get_content url
   imgs <- runX . images $ doc
   parallel_ $ map (download storage_path) imgs
   stopGlobalPool

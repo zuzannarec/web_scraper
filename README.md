@@ -16,4 +16,4 @@ time .cabal-sandbox/bin/web-scraper "<website_address>" "<path_to_folder_for_dow
 time .cabal-sandbox/bin/web-scraper "<website_address>" "<path_to_folder_for_downloaded_images>" +RTS -N4
 
 # example:
-time .cabal-sandbox/bin/web-scraper "http://bitcoinist.com/" "~/web-scraper-pictures/" +RTS -N4
+time .cabal-sandbox/bin/web-scraper "http://bitcoinist.com/" "/home/zuzanna/web-scraper-pictures/" +RTS -N4
